@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Taklifnoma Studio | To'y Taklifnomalari Konstruktori</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800&family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- JSZip & FileSaver for instant ZIP generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+  <!-- Builder Styles -->
+  <link rel="stylesheet" href="builder.css">
+</head>
+<body>
+
+  <!-- Top App Navigation -->
+  <header class="studio-header">
+    <div class="studio-brand">
+      <div class="studio-logo-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+      <div>
+        <h1 class="studio-title">Taklifnoma Studio</h1>
+        <p class="studio-subtitle">Professional To'y Taklifnomasi Konstruktori</p>
+      </div>
+    </div>
+
+    <div class="studio-actions">
+      <div class="preview-mode-toggle">
+        <button class="mode-btn active" id="btnPhoneView" title="Mobil ko'rinish">
+          <i class="fa-solid fa-mobile-screen-button"></i> <span>Mobil</span>
+        </button>
+        <button class="mode-btn" id="btnDesktopView" title="Katta ekran ko'rinishi">
+          <i class="fa-solid fa-desktop"></i> <span>Ekran</span>
+        </button>
+      </div>
+
+      <a href="index.html" target="_blank" class="action-btn btn-secondary">
+        <i class="fa-solid fa-arrow-up-right-from-square"></i> <span>Saytni Ko'rish</span>
+      </a>
+
+      <button class="action-btn btn-primary" id="btnDownloadZip">
+        <i class="fa-solid fa-download"></i> <span>ZIP Yuklab Olish</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <div class="studio-workspace">
+    
+    <!-- Left Sidebar: Settings & Tabs -->
+    <aside class="sidebar-panel">
+      
+      <!-- Nav Tabs -->
+      <nav class="tabs-nav">
+        <button class="tab-btn active" data-tab="tab-couple">
+          <i class="fa-solid fa-heart"></i>
+          <span>Kelin-Kuyov</span>
+        </button>
+        <button class="tab-btn" data-tab="tab-telegram">
+          <i class="fa-brands fa-telegram"></i>
+          <span>Telegram Bot</span>
+        </button>
+        <button class="tab-btn" data-tab="tab-locations">
+          <i class="fa-solid fa-map-location-dot"></i>
+          <span>Manzillar</span>
+        </button>
+        <button class="tab-btn" data-tab="tab-program">
+          <i class="fa-regular fa-calendar-check"></i>
+          <span>Dastur</span>
+        </button>
+        <button class="tab-btn" data-tab="tab-theme">
+          <i class="fa-solid fa-palette"></i>
+          <span>Mavzular</span>
+        </button>
+        <button class="tab-btn" data-tab="tab-export">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+          <span>Deploy / Yuklash</span>
+        </button>
+      </nav>
+
+      <!-- Tab Contents -->
+      <div class="tab-content-area">
+
+        <!-- TAB 1: Kelin-Kuyov & Sana -->
+        <div class="tab-pane active" id="tab-couple">
+          <div class="pane-header">
+            <h3>Kelin va Kuyov Ma'lumotlari</h3>
+            <p>Taklifnoma sarlavhasi, ismlar va to'y sanasi</p>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="field-box">
+              <label><i class="fa-solid fa-mars"></i> Kuyov Ismi</label>
+              <input type="text" id="cfgGroomName" value="Javohir" placeholder="Masalan: Javohir">
+            </div>
+            <div class="field-box">
+              <label><i class="fa-solid fa-venus"></i> Kelin Ismi</label>
+              <input type="text" id="cfgBrideName" value="Sevinch" placeholder="Masalan: Sevinch">
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="field-box">
+              <label><i class="fa-solid fa-font"></i> Kuyov Monogrammasi</label>
+              <input type="text" id="cfgMonoGroom" value="J" maxlength="2">
+            </div>
+            <div class="field-box">
+              <label><i class="fa-solid fa-font"></i> Kelin Monogrammasi</label>
+              <input type="text" id="cfgMonoBride" value="S" maxlength="2">
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="field-box">
+              <label><i class="fa-regular fa-calendar"></i> To'y Sanasi</label>
+              <input type="date" id="cfgWeddingDate" value="2026-10-02">
+            </div>
+            <div class="field-box">
+              <label><i class="fa-regular fa-clock"></i> To'y Vaqti</label>
+              <input type="time" id="cfgWeddingTime" value="18:00">
+            </div>
+          </div>
+
+          <div class="field-box">
+            <label><i class="fa-solid fa-users"></i> Taklif Etuvchi Oila (Hurmat ila)</label>
+            <input type="text" id="cfgFamilyHost" value="G'anisher Beknazarovlar oilasi" placeholder="Masalan: G'anisher Beknazarovlar oilasi">
+          </div>
+
+          <div class="field-box">
+            <label><i class="fa-regular fa-message"></i> Asosiy Taklifnoma Matni</label>
+            <textarea id="cfgInvitationText" rows="3">Sizni hayotimizdagi eng baxtiyor kun nikoh to'yimizga bag'ishlangan tantanali kechaning aziz mehmoni bo'lishga taklif qilamiz.</textarea>
+          </div>
+        </div>
+
+        <!-- TAB 2: Telegram Bot Integratsiyasi -->
+        <div class="tab-pane" id="tab-telegram">
+          <div class="pane-header">
+            <h3>Telegram Bot Integratsiyasi</h3>
+            <p>Mehmonlar yozgan izoh va tabriklar to'g'ridan-to'g'ri Telegramingizga keladi</p>
+          </div>
+
+          <div class="telegram-guide-box">
+            <div class="guide-title"><i class="fa-solid fa-circle-info"></i> Botni sozlash (1 daqiqada):</div>
+            <ol>
+              <li>Telegramda <b>@BotFather</b> ga kiring va <code>/newbot</code> deb yozing.</li>
+              <li>Botingiz nomini kiritib, <b>Bot Token</b>ni oling (masalan: <code>123456:ABC...</code>).</li>
+              <li>O'z Telegram <b>Chat ID</b> raqamingizni <b>@userinfobot</b> orqali bilib oling.</li>
+              <li>Ochgan botingizga kirib <b>/start</b> tugmasini bosib qo'ying.</li>
+            </ol>
+          </div>
+
+          <div class="field-box">
+            <label><i class="fa-solid fa-key"></i> Telegram Bot Token</label>
+            <input type="text" id="cfgBotToken" placeholder="Masalan: 7123456789:AAFlM-7AbcDeFgHiJkLmNoPQR">
+            <small class="field-hint">@BotFather bergan maxfiy API token</small>
+          </div>
+
+          <div class="field-box">
+            <label><i class="fa-solid fa-id-badge"></i> Sizning Telegram Chat ID / User ID</label>
+            <input type="text" id="cfgChatId" placeholder="Masalan: 123456789">
+            <small class="field-hint">@userinfobot dan olingan shaxsiy raqamingiz</small>
+          </div>
+
+          <button type="button" class="test-tg-btn" id="btnTestTelegram">
+            <i class="fa-paper-plane fa-solid"></i>
+            <span>Telegramga Sinov Xabari Yuborish</span>
+          </button>
+          <div id="tgTestResult" class="test-result-box" style="display: none;"></div>
+        </div>
+
+        <!-- TAB 3: Manzillar va Xaritalar -->
+        <div class="tab-pane" id="tab-locations">
+          <div class="pane-header">
+            <h3>Manzillar va Xarita Havolalari</h3>
+            <p>To'yxona, Kuyov va Kelin xonadonlari manzillari</p>
+          </div>
+
+          <!-- Location 1: To'yxona -->
+          <div class="location-group-box">
+            <div class="group-title"><i class="fa-solid fa-hotel"></i> 1. Tantanali To'yxona</div>
+            <div class="field-box">
+              <label>To'yxona Nomi</label>
+              <input type="text" id="cfgHallName" value='"Fayz" To\'yxonasi'>
+            </div>
+            <div class="field-box">
+              <label>To'liq Manzili</label>
+              <input type="text" id="cfgHallAddress" value='Qashqadaryo viloyati, Koson tumani, Guvalak shaharchasi, "Fayz" to\'yxonasi'>
+            </div>
+            <div class="form-grid-2">
+              <div class="field-box">
+                <label>Google Xarita Linki</label>
+                <input type="text" id="cfgHallGoogle" value="https://maps.google.com/?q=Koson+tuman+Guvalak+shaharchasi+Fayz+to%27yxonasi">
+              </div>
+              <div class="field-box">
+                <label>Yandex Xarita Linki</label>
+                <input type="text" id="cfgHallYandex" value="https://yandex.uz/maps/?text=Koson+tumani+Guvalak+shaharchasi">
+              </div>
+            </div>
+          </div>
+
+          <!-- Location 2: Kuyov Uyi -->
+          <div class="location-group-box">
+            <div class="group-title"><i class="fa-solid fa-house-chimney-user"></i> 2. Kuyov Xonadoni</div>
+            <div class="field-box">
+              <label>Manzili</label>
+              <input type="text" id="cfgGroomAddress" value="Qashqadaryo viloyati, Koson tumani, Guvalak shaharchasi">
+            </div>
+            <div class="form-grid-2">
+              <div class="field-box">
+                <label>Google Xarita Linki</label>
+                <input type="text" id="cfgGroomGoogle" value="https://maps.google.com/?q=Koson+tumani+Guvalak+shaharchasi">
+              </div>
+              <div class="field-box">
+                <label>Yandex Xarita Linki</label>
+                <input type="text" id="cfgGroomYandex" value="https://yandex.uz/maps/?text=Koson+tumani+Guvalak+shaharchasi">
+              </div>
+            </div>
+          </div>
+
+          <!-- Location 3: Kelin Uyi -->
+          <div class="location-group-box">
+            <div class="group-title"><i class="fa-solid fa-heart-pulse"></i> 3. Kelin Xonadoni</div>
+            <div class="field-box">
+              <label>Manzili</label>
+              <input type="text" id="cfgBrideAddress" value="Qashqadaryo viloyati, Koson tumani">
+            </div>
+            <div class="form-grid-2">
+              <div class="field-box">
+                <label>Google Xarita Linki</label>
+                <input type="text" id="cfgBrideGoogle" value="https://maps.google.com/?q=Koson+tumani">
+              </div>
+              <div class="field-box">
+                <label>Yandex Xarita Linki</label>
+                <input type="text" id="cfgBrideYandex" value="https://yandex.uz/maps/?text=Koson+tumani">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 4: Dastur (Kun tartibi) -->
+        <div class="tab-pane" id="tab-program">
+          <div class="pane-header">
+            <h3>To'y Dasturi (Kun Tartibi)</h3>
+            <p>Tantanali kunning bosqichlari va vaqtlari</p>
+          </div>
+
+          <div id="programItemsList" class="program-items-list">
+            <!-- Dynamically populated program items -->
+          </div>
+        </div>
+
+        <!-- TAB 5: Mavzular & Ranglar -->
+        <div class="tab-pane" id="tab-theme">
+          <div class="pane-header">
+            <h3>Dizayn va Ranglar Gammasi</h3>
+            <p>O'zingizga yoqqan hashamatli rang uslubini tanlang</p>
+          </div>
+
+          <div class="theme-grid">
+            <div class="theme-card active" data-theme="royal-blue">
+              <div class="theme-preview-color" style="background: linear-gradient(135deg, #0e2042 0%, #1a365d 60%, #d4af37 100%);"></div>
+              <div class="theme-name">👑 Royal Navy &amp; Gold</div>
+              <div class="theme-desc">Klassik to'q ko'k va zarhal oltin</div>
+            </div>
+
+            <div class="theme-card" data-theme="emerald-gold">
+              <div class="theme-preview-color" style="background: linear-gradient(135deg, #0d3b2e 0%, #165b47 60%, #e2c068 100%);"></div>
+              <div class="theme-name">🌿 Emerald &amp; Gold</div>
+              <div class="theme-desc">Zumrad yashil va nafis tilla</div>
+            </div>
+
+            <div class="theme-card" data-theme="burgundy-gold">
+              <div class="theme-preview-color" style="background: linear-gradient(135deg, #4a0e17 0%, #781d28 60%, #e5b974 100%);"></div>
+              <div class="theme-name">🍷 Burgundy &amp; Rose Gold</div>
+              <div class="theme-desc">Hashamatli to'q qizil va oltin</div>
+            </div>
+
+            <div class="theme-card" data-theme="velvet-dark">
+              <div class="theme-preview-color" style="background: linear-gradient(135deg, #111111 0%, #222222 60%, #d4af37 100%);"></div>
+              <div class="theme-name">🖤 Velvet Midnight &amp; Gold</div>
+              <div class="theme-desc">Tungi baxmal qora va oltin</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 6: Deploy & Export -->
+        <div class="tab-pane" id="tab-export">
+          <div class="pane-header">
+            <h3>Netlify &amp; GitHub-ga Yuklash</h3>
+            <p>Tayyorlangan taklifnoma saytini bir zumda internetga chiqaring</p>
+          </div>
+
+          <div class="export-card">
+            <div class="export-icon"><i class="fa-solid fa-file-zipper"></i></div>
+            <h4>Netlify uchun Tayyor ZIP</h4>
+            <p>Barcha HTML, CSS, JS, musiqa va rasmlarni bitta ZIP arxivda yuklab oling va Netlify-ga sudrab tashlang.</p>
+            <button class="action-btn btn-primary btn-full" id="btnDownloadZip2">
+              <i class="fa-solid fa-download"></i> ZIP Arxivni Yuklab Olish
+            </button>
+          </div>
+
+          <div class="deploy-steps-card">
+            <h4><i class="fa-solid fa-rocket"></i> Netlify-da 30 soniyada ochish:</h4>
+            <ol>
+              <li>Yuqoridagi <b>"ZIP Arxivni Yuklab Olish"</b> tugmasini bosing va arxivni oching (unzip qiling).</li>
+              <li>Brauzeringizda <b><a href="https://app.netlify.com/drop" target="_blank">app.netlify.com/drop</a></b> sahifasini oching.</li>
+              <li>Papkani Netlify oynasiga sudrab (Drag &amp; Drop) tashlang.</li>
+              <li>Saytingiz bir zumda internetda jonli ishlaydi! 🚀</li>
+            </ol>
+          </div>
+        </div>
+
+      </div>
+
+    </aside>
+
+    <!-- Right Area: Interactive Real-Time Device Mockup -->
+    <main class="preview-panel">
+      <div class="device-container" id="deviceContainer">
+        <div class="phone-mockup">
+          <div class="phone-top-bar">
+            <div class="phone-notch">
+              <div class="phone-camera"></div>
+              <div class="phone-speaker"></div>
+            </div>
+          </div>
+          <div class="phone-screen">
+            <iframe id="previewIframe" src="index.html" title="Taklifnoma Jonli Ko'rinishi"></iframe>
+          </div>
+          <div class="phone-home-indicator"></div>
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Global Studio Toast -->
+  <div class="studio-toast" id="studioToast">
+    <i class="fa-solid fa-circle-check"></i>
+    <span id="studioToastMsg">Saqlandi!</span>
+  </div>
+
+  <!-- Builder Logic Script -->
+  <script src="builder.js"></script>
+</body>
+</html>

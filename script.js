@@ -1,9 +1,22 @@
 /* ==========================================================================
-   Taklifnoma | Javohir & Sevinch - Interactive Scripts
+   Taklifnoma | Javohir & Sevinch - Interactive Scripts & Telegram Bot Sync
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Elements
+  // Load configuration from config.js or fallback defaults
+  const cfg = window.WEDDING_CONFIG || {
+    groomName: "Javohir",
+    brideName: "Sevinch",
+    monogramGroom: "J",
+    monogramBride: "S",
+    weddingDate: "2026-10-02T18:00:00+05:00",
+    weddingDateDisplay: "2026-yil 2-oktabr, Soat 18:00",
+    familyHost: "G'anisher Beknazarovlar oilasi",
+    invitationText: "Sizni hayotimizdagi eng baxtiyor kun nikoh to'yimizga bag'ishlangan tantanali kechaning aziz mehmoni bo'lishga taklif qilamiz.",
+    telegram: { botToken: "", chatId: "", enabled: false }
+  };
+
+  // DOM Elements
   const envelopeOverlay = document.getElementById('envelopeOverlay');
   const openInvitationBtn = document.getElementById('openInvitationBtn');
   const mainContent = document.getElementById('mainContent');
@@ -19,44 +32,51 @@ document.addEventListener('DOMContentLoaded', () => {
   const shareWhatsapp = document.getElementById('shareWhatsapp');
   const copySiteLinkBtn = document.getElementById('copySiteLinkBtn');
 
-  // Wedding Target Date: 2-Oktabr 2026, 18:00:00 (Tashkent UTC+5)
-  const weddingDate = new Date('2026-10-02T18:00:00+05:00').getTime();
+  // Apply Dynamic Configuration if elements exist
+  applyConfigToDOM(cfg);
+
+  // Target Date for Countdown
+  const targetTime = new Date(cfg.weddingDate).getTime();
 
   // 1. Envelope Opening & Audio Autoplay
-  openInvitationBtn.addEventListener('click', () => {
-    envelopeOverlay.classList.add('hidden');
-    mainContent.classList.add('visible');
+  if (openInvitationBtn) {
+    openInvitationBtn.addEventListener('click', () => {
+      if (envelopeOverlay) envelopeOverlay.classList.add('hidden');
+      if (mainContent) mainContent.classList.add('visible');
 
-    // Play wedding background audio
-    if (weddingAudio) {
-      weddingAudio.volume = 0.8;
-      weddingAudio.play().then(() => {
-        musicToggleBtn.classList.add('playing');
-      }).catch((e) => {
-        console.log('Audio autoplay prevented by browser policy:', e);
-      });
-    }
-  });
+      // Play wedding background audio
+      if (weddingAudio) {
+        weddingAudio.volume = 0.8;
+        weddingAudio.play().then(() => {
+          if (musicToggleBtn) musicToggleBtn.classList.add('playing');
+        }).catch((e) => {
+          console.log('Audio autoplay prevented by browser:', e);
+        });
+      }
+    });
+  }
 
   // 2. Music Toggle Button
-  musicToggleBtn.addEventListener('click', () => {
-    if (!weddingAudio) return;
+  if (musicToggleBtn) {
+    musicToggleBtn.addEventListener('click', () => {
+      if (!weddingAudio) return;
 
-    if (weddingAudio.paused) {
-      weddingAudio.play();
-      musicToggleBtn.classList.add('playing');
-      showToast('Musiqa yoqildi 🎵');
-    } else {
-      weddingAudio.pause();
-      musicToggleBtn.classList.remove('playing');
-      showToast('Musiqa to\'xtatildi 🔇');
-    }
-  });
+      if (weddingAudio.paused) {
+        weddingAudio.play();
+        musicToggleBtn.classList.add('playing');
+        showToast('Musiqa yoqildi 🎵');
+      } else {
+        weddingAudio.pause();
+        musicToggleBtn.classList.remove('playing');
+        showToast('Musiqa to\'xtatildi 🔇');
+      }
+    });
+  }
 
   // 3. Live Countdown Timer
   function updateCountdown() {
     const now = new Date().getTime();
-    const distance = weddingDate - now;
+    const distance = targetTime - now;
 
     const daysEl = document.getElementById('days');
     const hoursEl = document.getElementById('hours');
@@ -85,23 +105,23 @@ document.addEventListener('DOMContentLoaded', () => {
   setInterval(updateCountdown, 1000);
   updateCountdown();
 
-  // 4. Download .ics iCalendar File for Apple / Outlook / Calendar apps
+  // 4. Download .ics iCalendar File
   if (downloadIcsBtn) {
     downloadIcsBtn.addEventListener('click', () => {
       const icsContent = 
 `BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Javohir & Sevinch//Nikoh Toyi Taklifnomasi//UZ
+PRODID:-//${cfg.groomName} & ${cfg.brideName}//Nikoh Toyi Taklifnomasi//UZ
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
 BEGIN:VEVENT
-UID:wedding-javohir-sevinch-20261002@taklifnoma
+UID:wedding-${Date.now()}@taklifnoma
 DTSTAMP:20261002T130000Z
 DTSTART:20261002T130000Z
 DTEND:20261002T180000Z
-SUMMARY:Javohir & Sevinch Nikoh To'yi
-DESCRIPTION:Javohir va Sevinchning nikoh to'yiga bag'ishlangan tantanali kecha. Hurmat ila: G'anisher Beknazarovlar oilasi.
-LOCATION:Fayz to'yxonasi, Guvalak shaharchasi, Koson tumani, Qashqadaryo
+SUMMARY:${cfg.groomName} & ${cfg.brideName} Nikoh To'yi
+DESCRIPTION:${cfg.groomName} va ${cfg.brideName}ning nikoh to'yiga bag'ishlangan tantanali kecha. Hurmat ila: ${cfg.familyHost}.
+LOCATION:${cfg.locations?.hall?.name || 'Fayz to\'yxonasi'}, ${cfg.locations?.hall?.address || 'Koson tumani'}
 STATUS:CONFIRMED
 END:VEVENT
 END:VCALENDAR`;
@@ -109,22 +129,22 @@ END:VCALENDAR`;
       const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
       const link = document.createElement('a');
       link.href = window.URL.createObjectURL(blob);
-      link.setAttribute('download', 'Javohir_va_Sevinch_Nikoh_Toyi.ics');
+      link.setAttribute('download', `${cfg.groomName}_va_${cfg.brideName}_Nikoh_Toyi.ics`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      showToast('Taqvim fayli (.ics) yuklandi! 📅');
+      showToast('Taqvim eslatmasi (.ics) yuklandi! 📅');
     });
   }
 
-  // 5. Toast Notification Function
+  // 5. Global Toast Notification
   window.showToast = function(message) {
     if (!toastNotification || !toastMessage) return;
     toastMessage.textContent = message;
     toastNotification.classList.add('show');
     setTimeout(() => {
       toastNotification.classList.remove('show');
-    }, 3200);
+    }, 3500);
   };
 
   // 6. Copy Address Global Function
@@ -154,10 +174,62 @@ END:VCALENDAR`;
     document.body.removeChild(textArea);
   }
 
-  // 7. RSVP Form Submission
+  // 7. Telegram Bot API Integration
+  async function sendTelegramNotification(formData) {
+    const token = cfg.telegram?.botToken?.trim();
+    const chatId = cfg.telegram?.chatId?.trim();
+
+    if (!token || !chatId) {
+      console.log('Telegram Bot Token yoki Chat ID sozlanmagan, faqat lokal saqlanadi.');
+      return false;
+    }
+
+    const attendanceEmoji = formData.attendance.includes('boraman') ? '🥂 Keladi (Boradi)' : '💐 Afsuski bora olmaydi';
+
+    const messageText = 
+`💌 <b>Yangi To'y Qutlovi / Mehmon Tashrifi!</b>
+━━━━━━━━━━━━━━━━━━━━
+💍 <b>To'y:</b> ${cfg.groomName} &amp; ${cfg.brideName}
+👤 <b>Mehmon:</b> ${escapeHTML(formData.name)}
+📞 <b>Telefon:</b> ${escapeHTML(formData.phone || 'Kiritilmagan')}
+✨ <b>Ishtirok holati:</b> ${attendanceEmoji}
+👥 <b>Kishi soni:</b> ${escapeHTML(formData.guestCount)}
+💬 <b>Tilak:</b> <i>"${escapeHTML(formData.wish || 'Tilak yozilmadi')}"</i>
+━━━━━━━━━━━━━━━━━━━━
+⏰ <i>${new Date().toLocaleString('uz-UZ')}</i>`;
+
+    const apiUrl = `https://api.telegram.org/bot${token}/sendMessage`;
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: messageText,
+          parse_mode: 'HTML'
+        })
+      });
+
+      const resJson = await response.json();
+      return resJson.ok;
+    } catch (error) {
+      console.error('Telegramga yuborishda xatolik:', error);
+      return false;
+    }
+  }
+
+  // 8. RSVP Form Submission
   if (rsvpForm) {
-    rsvpForm.addEventListener('submit', (e) => {
+    rsvpForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+
+      const submitBtn = rsvpForm.querySelector('button[type="submit"]');
+      const originalBtnHtml = submitBtn ? submitBtn.innerHTML : '';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<span>Yuborilmoqda...</span> <i class="fa-solid fa-spinner fa-spin"></i>`;
+      }
 
       const guestName = document.getElementById('guestName').value.trim();
       const guestPhone = document.getElementById('guestPhone').value.trim();
@@ -165,19 +237,39 @@ END:VCALENDAR`;
       const guestCount = document.getElementById('guestCount').value;
       const guestWish = document.getElementById('guestWish').value.trim();
 
-      // Create new wish bubble if a wish was provided
+      const formData = {
+        name: guestName,
+        phone: guestPhone,
+        attendance: attendance,
+        guestCount: guestCount,
+        wish: guestWish
+      };
+
+      // Add to Guestbook DOM & LocalStorage
       if (guestWish) {
         addWishToDOM(guestName, guestWish, 'Hozirgina');
         saveWishToStorage(guestName, guestWish);
       }
 
-      // Hide form and show success message
+      // Send via Telegram Bot API
+      const telegramSent = await sendTelegramNotification(formData);
+
+      // Restore button
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnHtml;
+      }
+
+      // Hide form & show success confirmation
       rsvpForm.style.display = 'none';
       if (rsvpSuccessMsg) {
         rsvpSuccessMsg.style.display = 'block';
+        if (telegramSent) {
+          showToast('Tilagingiz Telegram orqali to\'y egalariga yetkazildi! 💌✨');
+        } else {
+          showToast('Ishtirokingiz muvaffaqiyatli qabul qilindi! 🎉');
+        }
       }
-
-      showToast('Ishtirokingiz muvaffaqiyatli qayd etildi! 🎉');
     });
   }
 
@@ -204,7 +296,7 @@ END:VCALENDAR`;
     }
   }
 
-  // Load saved wishes
+  // Load saved wishes from localStorage
   try {
     const savedWishes = JSON.parse(localStorage.getItem('wedding_wishes_js') || '[]');
     savedWishes.forEach(item => {
@@ -215,14 +307,15 @@ END:VCALENDAR`;
   }
 
   function escapeHTML(str) {
+    if (!str) return '';
     return str.replace(/[&<>'"]/g, 
       tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
     );
   }
 
-  // 8. Share Links Setup
+  // 9. Share Links Setup
   const currentUrl = encodeURIComponent(window.location.href);
-  const shareText = encodeURIComponent("Javohir & Sevinchning nikoh to'ylariga taklifnoma! Sizni kutib qolamiz! 💍✨");
+  const shareText = encodeURIComponent(`${cfg.groomName} & ${cfg.brideName}ning nikoh to'ylariga taklifnoma! Sizni kutib qolamiz! 💍✨`);
 
   if (shareTelegram) {
     shareTelegram.href = `https://t.me/share/url?url=${currentUrl}&text=${shareText}`;
@@ -236,7 +329,48 @@ END:VCALENDAR`;
     });
   }
 
-  // 9. Golden Sparkles & Floating Petals Canvas
+  // 10. Dynamic DOM population helper
+  function applyConfigToDOM(config) {
+    // Monograms
+    document.querySelectorAll('.monogram-badge .gold-text').forEach(el => {
+      el.textContent = `${config.monogramGroom || 'J'} & ${config.monogramBride || 'S'}`;
+    });
+    document.querySelectorAll('.monogram-letters').forEach(el => {
+      el.innerHTML = `<span class="letter">${config.monogramGroom || 'J'}</span><span class="ampersand">&amp;</span><span class="letter">${config.monogramBride || 'S'}</span>`;
+    });
+
+    // Couple Names
+    document.querySelectorAll('.envelope-names').forEach(el => {
+      el.innerHTML = `${escapeHTML(config.groomName)} &amp; ${escapeHTML(config.brideName)}`;
+    });
+    document.querySelectorAll('.groom-name').forEach(el => {
+      el.textContent = config.groomName;
+    });
+    document.querySelectorAll('.bride-name').forEach(el => {
+      el.textContent = config.brideName;
+    });
+    document.querySelectorAll('.footer-monogram').forEach(el => {
+      el.innerHTML = `${escapeHTML(config.groomName)} &amp; ${escapeHTML(config.brideName)}`;
+    });
+
+    // Main Texts
+    document.querySelectorAll('.main-invitation-text').forEach(el => {
+      if (config.invitationText) el.textContent = config.invitationText;
+    });
+    document.querySelectorAll('.host-name').forEach(el => {
+      if (config.familyHost) el.textContent = config.familyHost;
+    });
+    document.querySelectorAll('.countdown-target-date').forEach(el => {
+      if (config.weddingDateDisplay) el.innerHTML = `<i class="fa-regular fa-clock"></i> ${escapeHTML(config.weddingDateDisplay)}`;
+    });
+
+    // Theme Class
+    if (config.theme && config.theme !== 'royal-blue') {
+      document.body.classList.add(`theme-${config.theme}`);
+    }
+  }
+
+  // 11. Golden Sparkles & Floating Particles Canvas
   initParticleCanvas();
 });
 
