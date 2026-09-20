@@ -1,11 +1,10 @@
-# Temporary / Scratch directories
+# Dependencies and build outputs
+node_modules/
+dist/
+.vite/
+
+# Scratch and Temporary directories
 frames/
 .DS_Store
 Thumbs.db
 *.tmp
-
-# React Builder App dependencies & build artifacts
-builder-app/node_modules/
-builder-app/dist/
-builder-app/.vite/
-
