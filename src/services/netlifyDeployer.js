@@ -1,10 +1,10 @@
 import JSZip from 'jszip';
 
 /**
- * Creates a zip bundle of the template with dynamic config and deploys directly to Netlify REST API
+ * Creates a zip bundle of the template with dynamic config and deploys to Netlify
  */
 export async function deployToNetlify({ token, siteName, config, onProgress }) {
-  if (!token) {
+  if (!token?.trim()) {
     throw new Error("Netlify Access Token kiritilmagan! Iltimos, Netlify profilingizdan token oling.");
   }
 
@@ -21,31 +21,51 @@ window.WEDDING_CONFIG = ${JSON.stringify(config, null, 2)};
 `;
   zip.file('config.js', configContent);
 
-  // Fetch base template files
+  // Fetch base template files with fallback handling
   try {
-    const [htmlRes, cssRes, jsRes, musicRes, cardRes, calRes, videoRes] = await Promise.all([
-      fetch('/template/index.html').then(r => r.text()),
-      fetch('/template/style.css').then(r => r.text()),
-      fetch('/template/script.js').then(r => r.text()),
-      fetch('/template/assets/music.mp3').then(r => r.blob()).catch(() => null),
-      fetch('/template/assets/invitation_card.jpg').then(r => r.blob()).catch(() => null),
-      fetch('/template/assets/calendar_preview.jpg').then(r => r.blob()).catch(() => null),
-      fetch('/template/taklifnoma_video.mp4').then(r => r.blob()).catch(() => null)
+    const fetchSafeText = async (url) => {
+      try {
+        const res = await fetch(url);
+        if (res.ok) return await res.text();
+      } catch (e) {}
+      return '';
+    };
+
+    const fetchSafeBlob = async (url) => {
+      try {
+        const res = await fetch(url);
+        if (res.ok) return await res.blob();
+      } catch (e) {}
+      return null;
+    };
+
+    const [htmlContent, cssContent, jsContent, musicBlob, cardBlob, calBlob, videoBlob] = await Promise.all([
+      fetchSafeText('/template/index.html'),
+      fetchSafeText('/template/style.css'),
+      fetchSafeText('/template/script.js'),
+      fetchSafeBlob('/template/assets/music.mp3'),
+      fetchSafeBlob('/template/assets/invitation_card.jpg'),
+      fetchSafeBlob('/template/assets/calendar_preview.jpg'),
+      fetchSafeBlob('/template/taklifnoma_video.mp4')
     ]);
 
-    zip.file('index.html', htmlRes);
-    zip.file('style.css', cssRes);
-    zip.file('script.js', jsRes);
+    if (!htmlContent) {
+      throw new Error("Shablon fayli (index.html) yuklanmadi. Qayta urinib ko'ring.");
+    }
+
+    zip.file('index.html', htmlContent);
+    zip.file('style.css', cssContent);
+    zip.file('script.js', jsContent);
 
     const assetsFolder = zip.folder('assets');
-    if (musicRes) assetsFolder.file('music.mp3', musicRes);
-    if (cardRes) assetsFolder.file('invitation_card.jpg', cardRes);
-    if (calRes) assetsFolder.file('calendar_preview.jpg', calRes);
-    if (videoRes) zip.file('taklifnoma_video.mp4', videoRes);
+    if (musicBlob) assetsFolder.file('music.mp3', musicBlob);
+    if (cardBlob) assetsFolder.file('invitation_card.jpg', cardBlob);
+    if (calBlob) assetsFolder.file('calendar_preview.jpg', calBlob);
+    if (videoBlob) zip.file('taklifnoma_video.mp4', videoBlob);
 
   } catch (err) {
-    console.error("Shablon fayllarini yuklashda xatolik:", err);
-    throw new Error("Shablon fayllarini yig'ishda xatolik yuz berdi.");
+    console.error("Shablon fayllarini yig'ishda xatolik:", err);
+    throw new Error(`Shablon fayllarini yig'ishda xatolik: ${err.message}`);
   }
 
   // 2. Progress: Generating ZIP
@@ -55,10 +75,46 @@ window.WEDDING_CONFIG = ${JSON.stringify(config, null, 2)};
   // 3. Progress: Uploading to Netlify
   onProgress?.({ step: 3, text: "Netlify serveriga yuklanmoqda va domen ulanmoqda..." });
 
-  const cleanSiteName = siteName ? siteName.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-') : null;
+  const cleanSiteName = siteName ? siteName.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-') : '';
 
+  // Try Serverless Function first (100% CORS-free and robust on Netlify)
   try {
-    // If custom site name provided, attempt to create named site first or deploy directly
+    const endpoints = [
+      `/api/deploy?siteName=${encodeURIComponent(cleanSiteName)}`,
+      `/.netlify/functions/deploy?siteName=${encodeURIComponent(cleanSiteName)}`
+    ];
+
+    for (const endpoint of endpoints) {
+      try {
+        const fnRes = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token.trim()}`,
+            'Content-Type': 'application/zip'
+          },
+          body: zipBlob
+        });
+
+        if (fnRes.ok) {
+          const result = await fnRes.json();
+          onProgress?.({ step: 4, text: "Muvaffaqiyatli yakunlandi! 🚀" });
+          return result;
+        } else if (fnRes.status !== 404) {
+          const errData = await fnRes.json().catch(() => ({}));
+          throw new Error(errData.error || `Netlify Serverless xatosi (${fnRes.status})`);
+        }
+      } catch (fnErr) {
+        if (!fnErr.message.includes('404')) {
+          console.log('Function attempt notice:', fnErr);
+        }
+      }
+    }
+  } catch (e) {
+    console.log('Serverless attempt fallback to direct API...');
+  }
+
+  // Fallback: Direct Netlify API (if running outside Netlify environment)
+  try {
     let targetSiteId = null;
     let siteUrl = null;
 
@@ -77,16 +133,10 @@ window.WEDDING_CONFIG = ${JSON.stringify(config, null, 2)};
           const siteData = await createSiteRes.json();
           targetSiteId = siteData.id;
           siteUrl = siteData.ssl_url || siteData.url;
-        } else if (createSiteRes.status === 422) {
-          // Site name might already exist or be owned by the user, we will deploy with direct zip API
-          console.log("Subdomain band yoki mavjud, to'g'ridan-to'g'ri ZIP deploy qilinmoqda...");
         }
-      } catch (e) {
-        console.log("Site yaratish tekshiruvi:", e);
-      }
+      } catch (e) {}
     }
 
-    // Deploy endpoint
     let deployUrl = 'https://api.netlify.com/api/v1/sites';
     if (targetSiteId) {
       deployUrl = `https://api.netlify.com/api/v1/sites/${targetSiteId}/deploys`;
@@ -103,7 +153,7 @@ window.WEDDING_CONFIG = ${JSON.stringify(config, null, 2)};
 
     if (!deployRes.ok) {
       const errJson = await deployRes.json().catch(() => ({}));
-      throw new Error(errJson.message || `Netlify API xatolik kodi: ${deployRes.status}`);
+      throw new Error(errJson.message || `Netlify API xatosi (${deployRes.status})`);
     }
 
     const deployData = await deployRes.json();
@@ -115,12 +165,11 @@ window.WEDDING_CONFIG = ${JSON.stringify(config, null, 2)};
       success: true,
       url: finalUrl,
       siteId: deployData.site_id || targetSiteId,
-      name: deployData.name,
-      adminUrl: `https://app.netlify.com/sites/${deployData.name}/overview`
+      name: deployData.name
     };
 
   } catch (error) {
-    console.error("Netlify Deploy Error:", error);
-    throw new Error(`Netlify-ga deploy qilishda xatolik: ${error.message}`);
+    console.error("Netlify Deploy Final Error:", error);
+    throw new Error(error.message || "Netlify serveriga ulanishda xatolik yuz berdi.");
   }
 }
