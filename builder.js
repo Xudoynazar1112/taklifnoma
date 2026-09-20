@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Taklifnoma Studio | Constructor JavaScript
+   Taklifnoma Studio | Constructor JavaScript & 1-Click Netlify Deploy
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -14,9 +14,38 @@ document.addEventListener('DOMContentLoaded', () => {
   const tgTestResult = document.getElementById('tgTestResult');
   const btnDownloadZip = document.getElementById('btnDownloadZip');
   const btnDownloadZip2 = document.getElementById('btnDownloadZip2');
+  const btnOpenDeployModal = document.getElementById('btnOpenDeployModal');
+  const btnTriggerDeploy = document.getElementById('btnTriggerDeploy');
+  const deployModal = document.getElementById('deployModal');
+  const btnCloseModal = document.getElementById('btnCloseModal');
+  const deployLoadingState = document.getElementById('deployLoadingState');
+  const deploySuccessState = document.getElementById('deploySuccessState');
+  const deployErrorState = document.getElementById('deployErrorState');
+  const deployStatusTitle = document.getElementById('deployStatusTitle');
+  const deployStatusText = document.getElementById('deployStatusText');
+  const deployProgressBar = document.getElementById('deployProgressBar');
+  const liveSiteLink = document.getElementById('liveSiteLink');
+  const btnCopyLiveUrl = document.getElementById('btnCopyLiveUrl');
+  const copyBtnText = document.getElementById('copyBtnText');
+  const btnOpenLiveSite = document.getElementById('btnOpenLiveSite');
+  const btnShareTelegramLive = document.getElementById('btnShareTelegramLive');
+  const btnToggleQr = document.getElementById('btnToggleQr');
+  const qrCodeContainer = document.getElementById('qrCodeContainer');
+  const qrcodeCanvas = document.getElementById('qrcodeCanvas');
+  const btnRetryDeploy = document.getElementById('btnRetryDeploy');
+  const cfgNetlifyToken = document.getElementById('cfgNetlifyToken');
+  const cfgNetlifySubdomain = document.getElementById('cfgNetlifySubdomain');
   const studioToast = document.getElementById('studioToast');
   const studioToastMsg = document.getElementById('studioToastMsg');
   const programItemsList = document.getElementById('programItemsList');
+
+  // Load saved token from localStorage
+  if (cfgNetlifyToken) {
+    cfgNetlifyToken.value = localStorage.getItem('netlify_access_token') || '';
+    cfgNetlifyToken.addEventListener('input', (e) => {
+      localStorage.setItem('netlify_access_token', e.target.value.trim());
+    });
+  }
 
   // Active Wedding Configuration State
   let config = {
@@ -75,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 2. Viewport Switcher (Mobile vs Desktop)
+  // 2. Viewport Switcher
   btnPhoneView.addEventListener('click', () => {
     btnPhoneView.classList.add('active');
     btnDesktopView.classList.remove('active');
@@ -88,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
     deviceContainer.classList.add('desktop-mode');
   });
 
-  // 3. Render Program Items in Tab 4
+  // 3. Render Program Items
   function renderProgramList() {
     if (!programItemsList) return;
     programItemsList.innerHTML = '';
@@ -116,7 +145,6 @@ document.addEventListener('DOMContentLoaded', () => {
       programItemsList.appendChild(box);
     });
 
-    // Attach input listeners
     programItemsList.querySelectorAll('input').forEach(input => {
       input.addEventListener('input', (e) => {
         const idx = e.target.getAttribute('data-idx');
@@ -131,8 +159,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 4. Input Sync Listeners
   const inputMap = {
-    cfgGroomName: (v) => { config.groomName = v; config.monogramGroom = v.charAt(0).toUpperCase(); document.getElementById('cfgMonoGroom').value = config.monogramGroom; },
-    cfgBrideName: (v) => { config.brideName = v; config.monogramBride = v.charAt(0).toUpperCase(); document.getElementById('cfgMonoBride').value = config.monogramBride; },
+    cfgGroomName: (v) => { 
+      config.groomName = v; 
+      config.monogramGroom = v.charAt(0).toUpperCase(); 
+      document.getElementById('cfgMonoGroom').value = config.monogramGroom;
+      updateSubdomainAuto();
+    },
+    cfgBrideName: (v) => { 
+      config.brideName = v; 
+      config.monogramBride = v.charAt(0).toUpperCase(); 
+      document.getElementById('cfgMonoBride').value = config.monogramBride;
+      updateSubdomainAuto();
+    },
     cfgMonoGroom: (v) => { config.monogramGroom = v; },
     cfgMonoBride: (v) => { config.monogramBride = v; },
     cfgWeddingDate: (v) => updateWeddingDateTime(),
@@ -152,6 +190,14 @@ document.addEventListener('DOMContentLoaded', () => {
     cfgBrideGoogle: (v) => { config.locations.brideHome.googleMaps = v; },
     cfgBrideYandex: (v) => { config.locations.brideHome.yandexMaps = v; }
   };
+
+  function updateSubdomainAuto() {
+    if (cfgNetlifySubdomain && config.groomName && config.brideName) {
+      const g = config.groomName.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const b = config.brideName.toLowerCase().replace(/[^a-z0-9]/g, '');
+      cfgNetlifySubdomain.value = `${g}-${b}-toyi`;
+    }
+  }
 
   function updateWeddingDateTime() {
     const d = document.getElementById('cfgWeddingDate').value;
@@ -180,7 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
       card.classList.add('active');
       config.theme = card.getAttribute('data-theme');
       syncToIframe();
-      showStudioToast(`Mavzu o'zgartirildi: ${card.querySelector('.theme-name').textContent}`);
+      showStudioToast(`Mavzu: ${card.querySelector('.theme-name').textContent}`);
     });
   });
 
@@ -189,26 +235,18 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       if (previewIframe && previewIframe.contentWindow) {
         previewIframe.contentWindow.WEDDING_CONFIG = config;
-        
-        // Update live DOM inside iframe
         const iDoc = previewIframe.contentDocument || previewIframe.contentWindow.document;
         if (iDoc) {
-          // Names
           iDoc.querySelectorAll('.envelope-names').forEach(el => el.innerHTML = `${config.groomName} &amp; ${config.brideName}`);
           iDoc.querySelectorAll('.groom-name').forEach(el => el.textContent = config.groomName);
           iDoc.querySelectorAll('.bride-name').forEach(el => el.textContent = config.brideName);
           iDoc.querySelectorAll('.footer-monogram').forEach(el => el.innerHTML = `${config.groomName} &amp; ${config.brideName}`);
-          
-          // Monograms
           iDoc.querySelectorAll('.monogram-badge .gold-text').forEach(el => el.textContent = `${config.monogramGroom} & ${config.monogramBride}`);
           iDoc.querySelectorAll('.monogram-letters').forEach(el => el.innerHTML = `<span class="letter">${config.monogramGroom}</span><span class="ampersand">&amp;</span><span class="letter">${config.monogramBride}</span>`);
-          
-          // Texts
           iDoc.querySelectorAll('.main-invitation-text').forEach(el => el.textContent = config.invitationText);
           iDoc.querySelectorAll('.host-name').forEach(el => el.textContent = config.familyHost);
           iDoc.querySelectorAll('.countdown-target-date').forEach(el => el.innerHTML = `<i class="fa-regular fa-clock"></i> ${config.weddingDateDisplay}`);
 
-          // Locations
           const hallTitle = iDoc.querySelector('.featured-location .location-title');
           if (hallTitle) hallTitle.textContent = config.locations.hall.name;
           const hallAddr = iDoc.querySelector('.featured-location .location-address-box span');
@@ -266,7 +304,7 @@ Endi mehmonlarning barcha ezgu tilaklari va ishtirok tasdiqlari (RSVP) shu bot o
           showTgResult('error', `❌ Xatolik: ${data.description || 'Bot token yoki Chat ID xato'}. Botga kirib /start bosganingizni tekshiring.`);
         }
       } catch (err) {
-        showTgResult('error', `❌ Tarmoq xatoligi: ${err.message}. Internet aloqasini tekshiring.`);
+        showTgResult('error', `❌ Tarmoq xatoligi: ${err.message}.`);
       } finally {
         btnTestTelegram.disabled = false;
         btnTestTelegram.innerHTML = `<i class="fa-paper-plane fa-solid"></i> <span>Telegramga Sinov Xabari Yuborish</span>`;
@@ -281,59 +319,210 @@ Endi mehmonlarning barcha ezgu tilaklari va ishtirok tasdiqlari (RSVP) shu bot o
     tgTestResult.style.display = 'block';
   }
 
-  // 8. ZIP Download (Netlify-Ready Package Generator)
-  async function generateAndDownloadZip() {
-    showStudioToast('ZIP arxiv tayyorlanmoqda... ⏳');
-
-    if (typeof JSZip === 'undefined') {
-      alert('JSZip kutubxonasi yuklanmadi, sahifani yangilang.');
-      return;
-    }
-
+  // 8. Offline ZIP Generator
+  async function generateZipBlob() {
     const zip = new JSZip();
-
-    // 1. Generate customized config.js
     const configJsContent = `/**
- * Taklifnoma Konfiguratsiyasi (Taklifnoma Studio tomonidan yaratildi)
+ * Taklifnoma Konfiguratsiyasi (Taklifnoma Studio Pro)
  */
 window.WEDDING_CONFIG = ${JSON.stringify(config, null, 2)};
 `;
     zip.file('config.js', configJsContent);
 
-    // 2. Fetch HTML, CSS, JS and assets
+    const [htmlRes, cssRes, jsRes, musicRes, cardRes, calRes, videoRes] = await Promise.all([
+      fetch('index.html').then(r => r.text()),
+      fetch('style.css').then(r => r.text()),
+      fetch('script.js').then(r => r.text()),
+      fetch('assets/music.mp3').then(r => r.blob()).catch(() => null),
+      fetch('assets/invitation_card.jpg').then(r => r.blob()).catch(() => null),
+      fetch('assets/calendar_preview.jpg').then(r => r.blob()).catch(() => null),
+      fetch('taklifnoma_video.mp4').then(r => r.blob()).catch(() => null)
+    ]);
+
+    zip.file('index.html', htmlRes);
+    zip.file('style.css', cssRes);
+    zip.file('script.js', jsRes);
+
+    const assetsFolder = zip.folder('assets');
+    if (musicRes) assetsFolder.file('music.mp3', musicRes);
+    if (cardRes) assetsFolder.file('invitation_card.jpg', cardRes);
+    if (calRes) assetsFolder.file('calendar_preview.jpg', calRes);
+    if (videoRes) zip.file('taklifnoma_video.mp4', videoRes);
+
+    return await zip.generateAsync({ type: 'blob' });
+  }
+
+  async function handleDownloadZip() {
+    showStudioToast('ZIP arxiv tayyorlanmoqda... ⏳');
     try {
-      const [htmlRes, cssRes, jsRes, musicRes, cardRes] = await Promise.all([
-        fetch('index.html').then(r => r.text()),
-        fetch('style.css').then(r => r.text()),
-        fetch('script.js').then(r => r.text()),
-        fetch('assets/music.mp3').then(r => r.blob()).catch(() => null),
-        fetch('assets/invitation_card.jpg').then(r => r.blob()).catch(() => null)
-      ]);
-
-      zip.file('index.html', htmlRes);
-      zip.file('style.css', cssRes);
-      zip.file('script.js', jsRes);
-
-      const assetsFolder = zip.folder('assets');
-      if (musicRes) assetsFolder.file('music.mp3', musicRes);
-      if (cardRes) assetsFolder.file('invitation_card.jpg', cardRes);
-
-      // Generate ZIP blob
-      const zipBlob = await zip.generateAsync({ type: 'blob' });
-      const filename = `taklifnoma_${config.groomName.toLowerCase()}_${config.brideName.toLowerCase()}.zip`;
-      
-      saveAs(zipBlob, filename);
+      const zipBlob = await generateZipBlob();
+      saveAs(zipBlob, `taklifnoma_${config.groomName.toLowerCase()}_${config.brideName.toLowerCase()}.zip`);
       showStudioToast('ZIP arxiv yuklab olindi! 🎉');
     } catch (err) {
-      console.error('ZIP yaratishda xatolik:', err);
-      alert('Fayllarni yuklashda xatolik yuz berdi. Server ishlayotganiga ishonch hosil qiling.');
+      alert('Xatolik: ' + err.message);
     }
   }
 
-  if (btnDownloadZip) btnDownloadZip.addEventListener('click', generateAndDownloadZip);
-  if (btnDownloadZip2) btnDownloadZip2.addEventListener('click', generateAndDownloadZip);
+  if (btnDownloadZip) btnDownloadZip.addEventListener('click', handleDownloadZip);
+  if (btnDownloadZip2) btnDownloadZip2.addEventListener('click', handleDownloadZip);
 
-  // 9. Studio Toast Function
+  // 9. 1-CLICK AUTOMATED NETLIFY DEPLOY VIA REST API
+  async function startNetlifyDeploy() {
+    const token = (cfgNetlifyToken ? cfgNetlifyToken.value.trim() : '') || localStorage.getItem('netlify_access_token');
+    const subdomain = (cfgNetlifySubdomain ? cfgNetlifySubdomain.value.trim() : 'javohir-sevinch-toyi').toLowerCase().replace(/[^a-z0-9-]/g, '-');
+
+    if (!token) {
+      // Switch to export tab and focus token
+      const exportTab = document.querySelector('[data-tab="tab-export"]');
+      if (exportTab) exportTab.click();
+      if (cfgNetlifyToken) cfgNetlifyToken.focus();
+      showStudioToast('Iltimos, avval Netlify Tokeningizni kiriting!');
+      return;
+    }
+
+    // Open Modal
+    deployModal.classList.add('open');
+    deployLoadingState.style.display = 'flex';
+    deploySuccessState.style.display = 'none';
+    deployErrorState.style.display = 'none';
+    deployProgressBar.style.width = '20%';
+    deployStatusTitle.textContent = "Sayt fayllari tayyorlanmoqda...";
+    deployStatusText.textContent = "HTML, CSS, JS, musiqa va rasmlar yig'ilmoqda...";
+
+    try {
+      // Step 1: Generate ZIP
+      const zipBlob = await generateZipBlob();
+      deployProgressBar.style.width = '55%';
+      deployStatusTitle.textContent = "Netlify-ga yuklanmoqda...";
+      deployStatusText.textContent = "Sayt Netlify serverlariga jo'natilmoqda va domen ulanmoqda...";
+
+      // Step 2: Try creating named site or direct deploy
+      let targetSiteId = null;
+      let siteUrl = null;
+
+      if (subdomain) {
+        try {
+          const createSiteRes = await fetch('https://api.netlify.com/api/v1/sites', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name: subdomain })
+          });
+
+          if (createSiteRes.ok) {
+            const siteData = await createSiteRes.json();
+            targetSiteId = siteData.id;
+            siteUrl = siteData.ssl_url || siteData.url;
+          }
+        } catch (e) {
+          console.log('Create site notice:', e);
+        }
+      }
+
+      // Step 3: Deploy ZIP binary
+      let deployEndpoint = 'https://api.netlify.com/api/v1/sites';
+      if (targetSiteId) {
+        deployEndpoint = `https://api.netlify.com/api/v1/sites/${targetSiteId}/deploys`;
+      }
+
+      const deployRes = await fetch(deployEndpoint, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/zip'
+        },
+        body: zipBlob
+      });
+
+      if (!deployRes.ok) {
+        const errData = await deployRes.json().catch(() => ({}));
+        throw new Error(errData.message || `Netlify API xatosi (${deployRes.status})`);
+      }
+
+      const deployData = await deployRes.json();
+      const finalLiveUrl = deployData.ssl_url || deployData.url || (siteUrl ? siteUrl : `https://${deployData.name || deployData.subdomain}.netlify.app`);
+
+      deployProgressBar.style.width = '100%';
+
+      // Step 4: Show Success
+      setTimeout(() => {
+        deployLoadingState.style.display = 'none';
+        deploySuccessState.style.display = 'flex';
+
+        liveSiteLink.textContent = finalLiveUrl;
+        liveSiteLink.href = finalLiveUrl;
+        btnOpenLiveSite.href = finalLiveUrl;
+        btnShareTelegramLive.href = `https://t.me/share/url?url=${encodeURIComponent(finalLiveUrl)}&text=${encodeURIComponent(`${config.groomName} & ${config.brideName} nikoh to'yiga taklifnoma! Sizni kutib qolamiz! 💍✨`)}`;
+
+        // Generate QR code
+        if (qrcodeCanvas && typeof QRCode !== 'undefined') {
+          qrcodeCanvas.innerHTML = '';
+          new QRCode(qrcodeCanvas, {
+            text: finalLiveUrl,
+            width: 180,
+            height: 180,
+            colorDark: "#0e2042",
+            colorLight: "#ffffff"
+          });
+        }
+
+        // Confetti celebration!
+        if (typeof confetti !== 'undefined') {
+          confetti({
+            particleCount: 90,
+            spread: 70,
+            origin: { y: 0.6 }
+          });
+        }
+
+        showStudioToast('Saytingiz Netlify-da jonli ishga tushdi! 🎉');
+      }, 500);
+
+    } catch (err) {
+      console.error('Netlify deploy error:', err);
+      deployLoadingState.style.display = 'none';
+      deployErrorState.style.display = 'flex';
+      document.getElementById('deployErrorText').textContent = err.message || 'Domen band bo\'lishi yoki token xato bo\'lishi mumkin.';
+    }
+  }
+
+  if (btnOpenDeployModal) btnOpenDeployModal.addEventListener('click', startNetlifyDeploy);
+  if (btnTriggerDeploy) btnTriggerDeploy.addEventListener('click', startNetlifyDeploy);
+  if (btnRetryDeploy) btnRetryDeploy.addEventListener('click', startNetlifyDeploy);
+
+  // Close Modal
+  if (btnCloseModal) {
+    btnCloseModal.addEventListener('click', () => {
+      deployModal.classList.remove('open');
+    });
+  }
+
+  // Copy Live URL
+  if (btnCopyLiveUrl) {
+    btnCopyLiveUrl.addEventListener('click', () => {
+      const url = liveSiteLink.textContent;
+      navigator.clipboard.writeText(url).then(() => {
+        copyBtnText.textContent = 'Nusxalandi!';
+        setTimeout(() => { copyBtnText.textContent = 'Nusxalash'; }, 2200);
+        showStudioToast('Havola nusxalandi! 📋✨');
+      });
+    });
+  }
+
+  // Toggle QR Code
+  if (btnToggleQr) {
+    btnToggleQr.addEventListener('click', () => {
+      if (qrCodeContainer.style.display === 'none') {
+        qrCodeContainer.style.display = 'flex';
+      } else {
+        qrCodeContainer.style.display = 'none';
+      }
+    });
+  }
+
+  // Studio Toast Helper
   function showStudioToast(msg) {
     if (!studioToast || !studioToastMsg) return;
     studioToastMsg.textContent = msg;

@@ -13,9 +13,11 @@
   <!-- FontAwesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   
-  <!-- JSZip & FileSaver for instant ZIP generation -->
+  <!-- JSZip, FileSaver, QRCode & Confetti for 1-Click Netlify Deploy -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.min.js"></script>
 
   <!-- Builder Styles -->
   <link rel="stylesheet" href="builder.css">
@@ -27,8 +29,8 @@
     <div class="studio-brand">
       <div class="studio-logo-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
       <div>
-        <h1 class="studio-title">Taklifnoma Studio</h1>
-        <p class="studio-subtitle">Professional To'y Taklifnomasi Konstruktori</p>
+        <h1 class="studio-title">Taklifnoma Studio Pro</h1>
+        <p class="studio-subtitle">1-Click Netlify Deploy &amp; Telegram Bot Integratsiyasi</p>
       </div>
     </div>
 
@@ -46,8 +48,13 @@
         <i class="fa-solid fa-arrow-up-right-from-square"></i> <span>Saytni Ko'rish</span>
       </a>
 
-      <button class="action-btn btn-primary" id="btnDownloadZip">
+      <button class="action-btn btn-secondary" id="btnDownloadZip">
         <i class="fa-solid fa-download"></i> <span>ZIP Yuklab Olish</span>
+      </button>
+
+      <!-- 1-Click Netlify Deploy Button -->
+      <button class="action-btn btn-primary" id="btnOpenDeployModal">
+        <i class="fa-solid fa-rocket"></i> <span>Netlify-ga Deploy Qilish</span>
       </button>
     </div>
   </header>
@@ -80,9 +87,9 @@
           <i class="fa-solid fa-palette"></i>
           <span>Mavzular</span>
         </button>
-        <button class="tab-btn" data-tab="tab-export">
+        <button class="tab-btn highlight-tab" data-tab="tab-export">
           <i class="fa-solid fa-cloud-arrow-up"></i>
-          <span>Deploy / Yuklash</span>
+          <span>Netlify Deploy</span>
         </button>
       </nav>
 
@@ -291,30 +298,47 @@
           </div>
         </div>
 
-        <!-- TAB 6: Deploy & Export -->
+        <!-- TAB 6: Netlify Avtomatik Deploy -->
         <div class="tab-pane" id="tab-export">
           <div class="pane-header">
-            <h3>Netlify &amp; GitHub-ga Yuklash</h3>
-            <p>Tayyorlangan taklifnoma saytini bir zumda internetga chiqaring</p>
+            <h3>🚀 Netlify Avtomatik 1-Click Deploy</h3>
+            <p>Bitta tugmani bosish orqali to'y saytini Netlify-da jonli ishga tushiring</p>
           </div>
 
-          <div class="export-card">
+          <div class="telegram-guide-box" style="border-color: rgba(212, 175, 55, 0.4); background: rgba(212, 175, 55, 0.08);">
+            <div class="guide-title" style="color: #fbeea4;"><i class="fa-solid fa-key"></i> Netlify Tokenini Olish (1 daqiqada bepul):</div>
+            <ol>
+              <li><a href="https://app.netlify.com/user/applications#personal-access-tokens" target="_blank" rel="noreferrer" style="color: #5bc4f5; text-decoration: underline;">app.netlify.com/user/applications</a> sahifasiga kiring.</li>
+              <li><b>"New access token"</b> tugmasini bosing va tokenni nusxalang.</li>
+              <li>Pastdagi maydonga tokenni kiriting (brauzeringizda xavfsiz saqlanadi).</li>
+            </ol>
+          </div>
+
+          <div class="field-box">
+            <label><i class="fa-solid fa-lock"></i> Netlify Personal Access Token</label>
+            <input type="password" id="cfgNetlifyToken" placeholder="nfp_..." class="font-mono">
+            <small class="field-hint">Netlify profilingizdagi maxfiy token</small>
+          </div>
+
+          <div class="field-box">
+            <label><i class="fa-solid fa-globe"></i> Xohlagan Sayt Nomi (Subdomain)</label>
+            <div style="display: flex;">
+              <input type="text" id="cfgNetlifySubdomain" value="javohir-sevinch-toyi" placeholder="javohir-sevinch-toyi" style="border-top-right-radius: 0; border-bottom-right-radius: 0;">
+              <span style="background: #1b263b; border: 1px solid rgba(255,255,255,0.12); border-left: none; padding: 10px 14px; font-size: 0.85rem; color: #8a9cb5; border-top-right-radius: 8px; border-bottom-right-radius: 8px;">.netlify.app</span>
+            </div>
+          </div>
+
+          <button class="action-btn btn-primary btn-full" id="btnTriggerDeploy" style="margin-top: 10px; padding: 14px; font-size: 0.95rem;">
+            <i class="fa-solid fa-rocket"></i> <span>Netlify-ga Avtomatik Deploy Qilish</span>
+          </button>
+
+          <div class="export-card" style="margin-top: 10px;">
             <div class="export-icon"><i class="fa-solid fa-file-zipper"></i></div>
-            <h4>Netlify uchun Tayyor ZIP</h4>
-            <p>Barcha HTML, CSS, JS, musiqa va rasmlarni bitta ZIP arxivda yuklab oling va Netlify-ga sudrab tashlang.</p>
-            <button class="action-btn btn-primary btn-full" id="btnDownloadZip2">
+            <h4>Offline ZIP Arxiv</h4>
+            <p>Agar xohlasangiz, sayt fayllarini kompyuteringizga ZIP arxiv qilib ham saqlab olishingiz mumkin.</p>
+            <button class="action-btn btn-secondary btn-full" id="btnDownloadZip2">
               <i class="fa-solid fa-download"></i> ZIP Arxivni Yuklab Olish
             </button>
-          </div>
-
-          <div class="deploy-steps-card">
-            <h4><i class="fa-solid fa-rocket"></i> Netlify-da 30 soniyada ochish:</h4>
-            <ol>
-              <li>Yuqoridagi <b>"ZIP Arxivni Yuklab Olish"</b> tugmasini bosing va arxivni oching (unzip qiling).</li>
-              <li>Brauzeringizda <b><a href="https://app.netlify.com/drop" target="_blank">app.netlify.com/drop</a></b> sahifasini oching.</li>
-              <li>Papkani Netlify oynasiga sudrab (Drag &amp; Drop) tashlang.</li>
-              <li>Saytingiz bir zumda internetda jonli ishlaydi! 🚀</li>
-            </ol>
           </div>
         </div>
 
@@ -340,6 +364,83 @@
       </div>
     </main>
 
+  </div>
+
+  <!-- Deploy Progress & Result Modal -->
+  <div class="deploy-modal-overlay" id="deployModal">
+    <div class="deploy-modal-card">
+      <div class="deploy-modal-header">
+        <div class="modal-title-wrap">
+          <i class="fa-solid fa-rocket text-gold"></i>
+          <h3>Netlify Avtomatik Deploy</h3>
+        </div>
+        <button class="modal-close-btn" id="btnCloseModal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="deploy-modal-body">
+        
+        <!-- Loading Progress -->
+        <div id="deployLoadingState" class="deploy-loading-wrap">
+          <div class="spinner-ring">
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+          </div>
+          <h4 id="deployStatusTitle">Netlify-ga Yuklanmoqda...</h4>
+          <p id="deployStatusText" class="deploy-subtext">Fayllar tayyorlanmoqda va Netlify serveriga jo'natilmoqda...</p>
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="deployProgressBar"></div>
+          </div>
+        </div>
+
+        <!-- Success State -->
+        <div id="deploySuccessState" class="deploy-success-wrap" style="display: none;">
+          <div class="success-banner">
+            <i class="fa-solid fa-circle-check"></i>
+            <div>
+              <h4>Saytingiz Netlify-da Jonli Ishga Tushdi! 🎉</h4>
+              <p>Endi quyidagi havolani barcha mehmonlarga Telegram yoki WhatsApp orqali ulashishingiz mumkin!</p>
+            </div>
+          </div>
+
+          <div class="live-url-card">
+            <a id="liveSiteLink" href="#" target="_blank" class="live-url-text">https://...netlify.app</a>
+            <button id="btnCopyLiveUrl" class="copy-url-btn">
+              <i class="fa-regular fa-copy"></i> <span id="copyBtnText">Nusxalash</span>
+            </button>
+          </div>
+
+          <div class="modal-actions-grid">
+            <a id="btnOpenLiveSite" href="#" target="_blank" class="modal-btn btn-gold">
+              <i class="fa-solid fa-arrow-up-right-from-square"></i> <span>Saytni Ochish</span>
+            </a>
+            <a id="btnShareTelegramLive" href="#" target="_blank" class="modal-btn btn-tg">
+              <i class="fa-brands fa-telegram"></i> <span>Telegramda Ulashish</span>
+            </a>
+            <button id="btnToggleQr" class="modal-btn btn-dark">
+              <i class="fa-solid fa-qrcode"></i> <span>QR-Kod</span>
+            </button>
+          </div>
+
+          <!-- QR Code Container -->
+          <div id="qrCodeContainer" class="qr-code-box" style="display: none;">
+            <p>Telefonda skaner qilish uchun QR-Kod:</p>
+            <div id="qrcodeCanvas"></div>
+          </div>
+        </div>
+
+        <!-- Error State -->
+        <div id="deployErrorState" class="deploy-error-wrap" style="display: none;">
+          <div class="error-banner">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <div>
+              <h4>Deploy qilishda xatolik yuz berdi</h4>
+              <p id="deployErrorText">Xatolik matni</p>
+            </div>
+          </div>
+          <button id="btnRetryDeploy" class="action-btn btn-secondary btn-full">Qayta Urinish</button>
+        </div>
+
+      </div>
+    </div>
   </div>
 
   <!-- Global Studio Toast -->
