@@ -5,7 +5,7 @@ export async function handler(event, context) {
       statusCode: 200,
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
         'Access-Control-Allow-Methods': 'POST, OPTIONS'
       },
       body: ''
@@ -15,7 +15,6 @@ export async function handler(event, context) {
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
-      headers: { 'Access-Control-Allow-Origin': '*' },
       body: JSON.stringify({ error: 'Method Not Allowed' })
     };
   }
@@ -25,7 +24,6 @@ export async function handler(event, context) {
     if (!authHeader) {
       return {
         statusCode: 400,
-        headers: { 'Access-Control-Allow-Origin': '*' },
         body: JSON.stringify({ error: 'Netlify Personal Access Token kiritilmagan!' })
       };
     }
@@ -44,7 +42,6 @@ export async function handler(event, context) {
     if (!zipBuffer || zipBuffer.length === 0) {
       return {
         statusCode: 400,
-        headers: { 'Access-Control-Allow-Origin': '*' },
         body: JSON.stringify({ error: 'ZIP fayl ma\'lumotlari bo\'sh!' })
       };
     }
@@ -70,7 +67,7 @@ export async function handler(event, context) {
           targetSiteId = siteData.id;
           siteUrl = siteData.ssl_url || siteData.url;
         } else if (createRes.status === 422) {
-          console.log('Subdomain band yoki foydalanuvchiga tegishli, to\'g\'ridan-to\'g\'ri zip deploy qilinadi.');
+          console.log('Subdomain band yoki mavjud, to\'g\'ridan-to\'g\'ri zip deploy qilinadi.');
         }
       } catch (err) {
         console.log('Site creation error:', err);
@@ -96,7 +93,6 @@ export async function handler(event, context) {
       const errData = await deployRes.json().catch(() => ({}));
       return {
         statusCode: deployRes.status,
-        headers: { 'Access-Control-Allow-Origin': '*' },
         body: JSON.stringify({ 
           error: errData.message || `Netlify API xatosi (${deployRes.status}): Token yoki domen xato bo'lishi mumkin.` 
         })
@@ -109,8 +105,7 @@ export async function handler(event, context) {
     return {
       statusCode: 200,
       headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         success: true,
@@ -124,7 +119,6 @@ export async function handler(event, context) {
     console.error('Serverless deploy error:', error);
     return {
       statusCode: 500,
-      headers: { 'Access-Control-Allow-Origin': '*' },
       body: JSON.stringify({ error: `Server xatosi: ${error.message}` })
     };
   }
