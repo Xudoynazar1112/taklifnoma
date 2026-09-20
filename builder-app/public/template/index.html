@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Taklifnoma | Javohir &amp; Sevinch Nikoh To'yi</title>
+  
+  <!-- SEO & Social Meta Tags -->
+  <meta name="description" content="Javohir & Sevinch nikoh to'ylariga bag'ishlangan tantanali kechaning onlayn taklifnomasi. 2-Oktabr 2026-yil, Koson tumani, Fayz to'yxonasi.">
+  <meta property="og:title" content="Taklifnoma: Javohir & Sevinch Nikoh To'yi">
+  <meta property="og:description" content="Sizni hayotimizdagi eng baxtiyor kunda aziz mehmonimiz bo'lishga taklif qilamiz!">
+  <meta property="og:image" content="assets/invitation_card.jpg">
+  <meta property="og:type" content="website">
+
+  <!-- Google Fonts: Luxury Serif & Calligraphy -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cinzel:wght@400;600;700;800&family=Great+Vibes&family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Background Animated Canvas (Golden Petals & Stardust) -->
+  <canvas id="particleCanvas"></canvas>
+
+  <!-- Floating Music Toggle Controller -->
+  <div class="music-floating-btn" id="musicToggleBtn" title="Musiqani boshqarish">
+    <div class="sound-wave" id="soundWave">
+      <span></span><span></span><span></span><span></span>
+    </div>
+    <i class="fa-solid fa-music" id="musicIcon"></i>
+  </div>
+  <audio id="weddingAudio" loop preload="auto">
+    <source src="assets/music.mp3" type="audio/mp3">
+  </audio>
+
+  <!-- Interactive Opening Envelope / Cover Screen -->
+  <div class="envelope-overlay" id="envelopeOverlay">
+    <div class="envelope-wrapper">
+      <div class="wax-seal-wrapper">
+        <div class="monogram-badge">
+          <span class="gold-text">J &amp; S</span>
+        </div>
+      </div>
+      <div class="envelope-content">
+        <p class="envelope-subtitle">BISMILLAHIR ROHMANIR ROHIM</p>
+        <h2 class="envelope-title">Nikoh To'yi Taklifnomasi</h2>
+        <h1 class="envelope-names">Javohir &amp; Sevinch</h1>
+        <div class="envelope-date">
+          <span>02</span> • <span>OKTABR</span> • <span>2026</span>
+        </div>
+        <button class="open-invitation-btn" id="openInvitationBtn">
+          <span class="btn-sparkle">✨</span>
+          <span>Taklifnomani Ochish</span>
+          <i class="fa-solid fa-envelope-open-text"></i>
+        </button>
+        <p class="envelope-hint">Musiqa bilan birga ochiladi 🎵</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Website Container -->
+  <main class="main-container" id="mainContent">
+    
+    <!-- Hero Header / Monogram Section -->
+    <header class="hero-section">
+      <div class="decorative-top-ornament">
+        <svg viewBox="0 0 100 20" class="gold-ornament-svg">
+          <path d="M0,10 Q25,0 50,10 T100,10" fill="none" stroke="currentColor" stroke-width="1"/>
+          <circle cx="50" cy="10" r="3" fill="currentColor"/>
+        </svg>
+      </div>
+
+      <p class="bismillah-text">Bismillahir Rohmanir Rohim</p>
+      
+      <!-- Monogram Emblem -->
+      <div class="monogram-container">
+        <div class="wreath-ring">
+          <div class="monogram-letters">
+            <span class="letter">J</span>
+            <span class="ampersand">&amp;</span>
+            <span class="letter">S</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="couple-names-wrap">
+        <h1 class="groom-name">Javohir</h1>
+        <span class="heart-symbol">❦</span>
+        <h1 class="bride-name">Sevinch</h1>
+      </div>
+
+      <p class="invitation-tagline">WEDDING INVITATION • TO'Y TAKLIFNOMASI</p>
+      
+      <div class="header-doves">
+        <i class="fa-solid fa-dove dove-left"></i>
+        <span class="wedding-rings">💍💍</span>
+        <i class="fa-solid fa-dove dove-right"></i>
+      </div>
+    </header>
+
+    <!-- Main Invitation Card Box -->
+    <section class="card-section glass-card">
+      <div class="card-inner-border">
+        <div class="quote-icon"><i class="fa-solid fa-quote-left"></i></div>
+        <p class="main-invitation-text">
+          Sizni hayotimizdagi eng baxtiyor kun nikoh to'yimizga bag'ishlangan tantanali kechaning aziz mehmoni bo'lishga taklif qilamiz.
+        </p>
+        <div class="invitation-divider">
+          <span class="divider-line"></span>
+          <span class="divider-icon">✦</span>
+          <span class="divider-line"></span>
+        </div>
+        <p class="family-host-text">
+          <strong>Hurmat ila:</strong><br>
+          <span class="host-name">G'anisher Beknazarovlar oilasi</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- Countdown Timer Section -->
+    <section class="section-container countdown-section">
+      <div class="section-header">
+        <span class="section-pretitle">QUVONCHLI KUNGACHA</span>
+        <h2 class="section-title">Teskari Sanoq</h2>
+        <div class="title-underline"></div>
+      </div>
+
+      <div class="countdown-grid" id="countdownGrid">
+        <div class="countdown-card">
+          <div class="countdown-number-box">
+            <span class="countdown-number" id="days">00</span>
+          </div>
+          <span class="countdown-label">Kun</span>
+        </div>
+        <div class="countdown-separator">:</div>
+        <div class="countdown-card">
+          <div class="countdown-number-box">
+            <span class="countdown-number" id="hours">00</span>
+          </div>
+          <span class="countdown-label">Soat</span>
+        </div>
+        <div class="countdown-separator">:</div>
+        <div class="countdown-card">
+          <div class="countdown-number-box">
+            <span class="countdown-number" id="minutes">00</span>
+          </div>
+          <span class="countdown-label">Daqiqa</span>
+        </div>
+        <div class="countdown-separator">:</div>
+        <div class="countdown-card">
+          <div class="countdown-number-box">
+            <span class="countdown-number" id="seconds">00</span>
+          </div>
+          <span class="countdown-label">Soniya</span>
+        </div>
+      </div>
+
+      <p class="countdown-target-date">
+        <i class="fa-regular fa-clock"></i> 2026-yil 2-oktabr, Soat 18:00
+      </p>
+    </section>
+
+    <!-- Calendar Section -->
+    <section class="section-container calendar-section glass-card">
+      <div class="section-header">
+        <span class="section-pretitle">SANANI SAQLAB QO'YING</span>
+        <h2 class="section-title">Oktabr 2026</h2>
+        <div class="title-underline"></div>
+      </div>
+
+      <div class="custom-calendar">
+        <div class="calendar-days-header">
+          <span>DU</span>
+          <span>SE</span>
+          <span>CHOR</span>
+          <span>PA</span>
+          <span>JU</span>
+          <span>SHA</span>
+          <span>YA</span>
+        </div>
+        <div class="calendar-grid">
+          <!-- Row 1: Starts on Thursday (Pa=1, Ju=2) -->
+          <span class="cal-empty"></span>
+          <span class="cal-empty"></span>
+          <span class="cal-empty"></span>
+          <span class="cal-day">1</span>
+          <span class="cal-day cal-event-day" id="weddingDayHighlight">
+            <span class="event-pulse"></span>
+            2
+            <i class="fa-solid fa-heart cal-heart"></i>
+          </span>
+          <span class="cal-day">3</span>
+          <span class="cal-day">4</span>
+
+          <!-- Row 2 -->
+          <span class="cal-day">5</span>
+          <span class="cal-day">6</span>
+          <span class="cal-day">7</span>
+          <span class="cal-day">8</span>
+          <span class="cal-day">9</span>
+          <span class="cal-day">10</span>
+          <span class="cal-day">11</span>
+
+          <!-- Row 3 -->
+          <span class="cal-day">12</span>
+          <span class="cal-day">13</span>
+          <span class="cal-day">14</span>
+          <span class="cal-day">15</span>
+          <span class="cal-day">16</span>
+          <span class="cal-day">17</span>
+          <span class="cal-day">18</span>
+
+          <!-- Row 4 -->
+          <span class="cal-day">19</span>
+          <span class="cal-day">20</span>
+          <span class="cal-day">21</span>
+          <span class="cal-day">22</span>
+          <span class="cal-day">23</span>
+          <span class="cal-day">24</span>
+          <span class="cal-day">25</span>
+
+          <!-- Row 5 -->
+          <span class="cal-day">26</span>
+          <span class="cal-day">27</span>
+          <span class="cal-day">28</span>
+          <span class="cal-day">29</span>
+          <span class="cal-day">30</span>
+          <span class="cal-day">31</span>
+          <span class="cal-empty"></span>
+        </div>
+      </div>
+
+      <!-- Add to Calendar Buttons -->
+      <div class="calendar-action-buttons">
+        <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Javohir+%26+Sevinch+Nikoh+To%27yi&dates=20261002T130000Z/20261002T180000Z&details=Javohir+va+Sevinchning+tantanali+nikoh+to%27y+kechasi.+Fayz+to%27yxonasi&location=Fayz+to%27yxonasi,+Guvalak+shaharchasi,+Koson+tumani" target="_blank" rel="noopener" class="btn-calendar btn-google-cal">
+          <i class="fa-brands fa-google"></i> Google Taqvimga qo'shish
+        </a>
+        <button id="downloadIcsBtn" class="btn-calendar btn-apple-cal">
+          <i class="fa-brands fa-apple"></i> Apple / iCal (.ics)
+        </button>
+      </div>
+    </section>
+
+    <!-- Wedding Program / Schedule Timeline -->
+    <section class="section-container timeline-section">
+      <div class="section-header">
+        <span class="section-pretitle">TANTANALI KUN REJASI</span>
+        <h2 class="section-title">To'y Dasturi</h2>
+        <div class="title-underline"></div>
+      </div>
+
+      <div class="timeline-wrapper">
+        <div class="timeline-item">
+          <div class="timeline-icon"><i class="fa-solid fa-camera-retro"></i></div>
+          <div class="timeline-content">
+            <span class="timeline-time">17:00</span>
+            <h3 class="timeline-heading">Mehmonlarni Kutib Olish</h3>
+            <p class="timeline-desc">Qutlug' qadamlar, fotosessiya va samimiy uchrashuvlar</p>
+          </div>
+        </div>
+
+        <div class="timeline-item highlight-item">
+          <div class="timeline-icon"><i class="fa-solid fa-ring"></i></div>
+          <div class="timeline-content">
+            <span class="timeline-time">18:00</span>
+            <h3 class="timeline-heading">Tantanali Marosim</h3>
+            <p class="timeline-desc">Kelin va Kuyovning to'yxonaga kirib kelishi va nikoh oqshomi boshlanishi</p>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-icon"><i class="fa-solid fa-champagne-glasses"></i></div>
+          <div class="timeline-content">
+            <span class="timeline-time">19:00</span>
+            <h3 class="timeline-heading">Shodiyona va Tabriklar</h3>
+            <p class="timeline-desc">Oila a'zolari, qarindoshlar va do'stlarning qutlovlari, kuy-qo'shiqlar</p>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-icon"><i class="fa-solid fa-cake-candles"></i></div>
+          <div class="timeline-content">
+            <span class="timeline-time">20:30</span>
+            <h3 class="timeline-heading">Kelin-Kuyov Valsi &amp; To'y Torti</h3>
+            <p class="timeline-desc">Sevimli musiqa sadosi ostida go'zal raqs va shirin to'y tortini kesish</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Locations Section (To'yxona, Kuyov Uyi, Kelin Uyi) -->
+    <section class="section-container locations-section" id="manzillar">
+      <div class="section-header">
+        <span class="section-pretitle">LOKATSIYA VA YO'NALISHLAR</span>
+        <h2 class="section-title">To'y Manzillari</h2>
+        <div class="title-underline"></div>
+        <p class="section-subtitle">Xaritalar orqali yo'nalishni oson belgilab oling</p>
+      </div>
+
+      <div class="locations-grid">
+        
+        <!-- Location 1: Fayz To'yxonasi (Main Wedding Hall) -->
+        <div class="location-card featured-location">
+          <div class="location-badge"><i class="fa-solid fa-star"></i> Tantanali Marosim Joyi</div>
+          <div class="location-header">
+            <div class="location-icon-circle">
+              <i class="fa-solid fa-hotel"></i>
+            </div>
+            <div>
+              <h3 class="location-title">"Fayz" To'yxonasi</h3>
+              <p class="location-type">Asosiy Tantanali Nikoh Oqshomi</p>
+            </div>
+          </div>
+          <div class="location-address-box">
+            <i class="fa-solid fa-location-dot"></i>
+            <span>Qashqadaryo viloyati, Koson tumani, Guvalak shaharchasi, "Fayz" to'yxonasi</span>
+          </div>
+          <div class="location-time-tag">
+            <i class="fa-regular fa-clock"></i> 2-Oktabr 2026, 18:00
+          </div>
+          
+          <div class="location-buttons">
+            <a href="https://maps.google.com/?q=Koson+tuman+Guvalak+shaharchasi+Fayz+to%27yxonasi" target="_blank" rel="noopener" class="btn-nav btn-google">
+              <i class="fa-brands fa-google"></i> Google Xarita
+            </a>
+            <a href="https://yandex.uz/maps/?text=Koson+tumani+Guvalak+shaharchasi" target="_blank" rel="noopener" class="btn-nav btn-yandex">
+              <i class="fa-solid fa-diamond-turn-right"></i> Yandex Xarita
+            </a>
+            <button class="btn-nav btn-copy" onclick="copyAddress('Koson tumani, Guvalak shaharchasi, Fayz to\'yxonasi')">
+              <i class="fa-regular fa-copy"></i> Nusxalash
+            </button>
+          </div>
+        </div>
+
+        <!-- Location 2: Kuyov Xonadoni (Groom's Home) -->
+        <div class="location-card">
+          <div class="location-header">
+            <div class="location-icon-circle groom-circle">
+              <i class="fa-solid fa-house-chimney-user"></i>
+            </div>
+            <div>
+              <h3 class="location-title">Kuyov Xonadoni</h3>
+              <p class="location-type">Javohirning uyi</p>
+            </div>
+          </div>
+          <div class="location-address-box">
+            <i class="fa-solid fa-location-dot"></i>
+            <span>Qashqadaryo viloyati, Koson tumani, Guvalak shaharchasi</span>
+          </div>
+          
+          <div class="location-buttons">
+            <a href="https://maps.google.com/?q=Koson+tumani+Guvalak+shaharchasi" target="_blank" rel="noopener" class="btn-nav btn-google">
+              <i class="fa-brands fa-google"></i> Google Xarita
+            </a>
+            <a href="https://yandex.uz/maps/?text=Koson+tumani+Guvalak+shaharchasi" target="_blank" rel="noopener" class="btn-nav btn-yandex">
+              <i class="fa-solid fa-diamond-turn-right"></i> Yandex Xarita
+            </a>
+            <button class="btn-nav btn-copy" onclick="copyAddress('Koson tumani, Guvalak shaharchasi, Kuyov xonadoni')">
+              <i class="fa-regular fa-copy"></i> Nusxalash
+            </button>
+          </div>
+        </div>
+
+        <!-- Location 3: Kelin Xonadoni (Bride's Home) -->
+        <div class="location-card">
+          <div class="location-header">
+            <div class="location-icon-circle bride-circle">
+              <i class="fa-solid fa-heart-pulse"></i>
+            </div>
+            <div>
+              <h3 class="location-title">Kelin Xonadoni</h3>
+              <p class="location-type">Sevinchning uyi</p>
+            </div>
+          </div>
+          <div class="location-address-box">
+            <i class="fa-solid fa-location-dot"></i>
+            <span>Qashqadaryo viloyati, Koson tumani</span>
+          </div>
+          
+          <div class="location-buttons">
+            <a href="https://maps.google.com/?q=Koson+tumani" target="_blank" rel="noopener" class="btn-nav btn-google">
+              <i class="fa-brands fa-google"></i> Google Xarita
+            </a>
+            <a href="https://yandex.uz/maps/?text=Koson+tumani" target="_blank" rel="noopener" class="btn-nav btn-yandex">
+              <i class="fa-solid fa-diamond-turn-right"></i> Yandex Xarita
+            </a>
+            <button class="btn-nav btn-copy" onclick="copyAddress('Koson tumani, Kelin xonadoni')">
+              <i class="fa-regular fa-copy"></i> Nusxalash
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- RSVP / Ishtirokni Tasdiqlash Form Section -->
+    <section class="section-container rsvp-section glass-card">
+      <div class="section-header">
+        <span class="section-pretitle">ISHTIROKNI TASDIQLASH</span>
+        <h2 class="section-title">To'yga Tashrifingiz</h2>
+        <div class="title-underline"></div>
+        <p class="section-subtitle">Tashrif buyurishingiz haqida oldindan xabar bersangiz mamnun bo'lamiz</p>
+      </div>
+
+      <form id="rsvpForm" class="rsvp-form">
+        <div class="form-group">
+          <label for="guestName"><i class="fa-regular fa-user"></i> Ism va Familiyangiz</label>
+          <input type="text" id="guestName" name="guestName" placeholder="Masalan: Sardor Rahimov" required>
+        </div>
+
+        <div class="form-group">
+          <label for="guestPhone"><i class="fa-solid fa-phone"></i> Telefon raqamingiz</label>
+          <input type="tel" id="guestPhone" name="guestPhone" placeholder="+998 90 123 45 67">
+        </div>
+
+        <div class="form-group">
+          <label><i class="fa-regular fa-circle-check"></i> Ishtirokingiz holati</label>
+          <div class="attendance-options">
+            <label class="attendance-label">
+              <input type="radio" name="attendance" value="Albatta boraman" checked>
+              <span class="radio-custom"></span>
+              <span class="option-text">Albatta boraman 🥂</span>
+            </label>
+            <label class="attendance-label">
+              <input type="radio" name="attendance" value="Afsuski bora olmayman">
+              <span class="radio-custom"></span>
+              <span class="option-text">Afsuski bora olmayman 💐</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="guestCount"><i class="fa-solid fa-users"></i> Necha kishi bo'lib kelasiz?</label>
+          <select id="guestCount" name="guestCount">
+            <option value="1 kishi">1 kishi (Yolg'iz)</option>
+            <option value="2 kishi" selected>2 kishi (Juftlikda)</option>
+            <option value="3-4 kishi">3-4 kishi (Oila bilan)</option>
+            <option value="5+ kishi">5+ kishi</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="guestWish"><i class="fa-regular fa-comment-dots"></i> Yoshlarga samimiy tilagingiz (ixtiyoriy)</label>
+          <textarea id="guestWish" rows="3" placeholder="Baxtli va saodatli bo'linglar! Qo'sha qaringlar..."></textarea>
+        </div>
+
+        <button type="submit" class="submit-rsvp-btn">
+          <span>Tasdiqlash va Yuborish</span>
+          <i class="fa-solid fa-paper-plane"></i>
+        </button>
+      </form>
+
+      <div id="rsvpSuccessMsg" class="rsvp-success-msg" style="display: none;">
+        <i class="fa-solid fa-circle-check success-icon"></i>
+        <h4>Tashrifingiz qabul qilindi!</h4>
+        <p>E'tiboringiz va qimmatli vaqtingiz uchun tashakkur! Sizni to'yimizda ko'rishdan bag'oyat mamnun bo'lamiz!</p>
+      </div>
+    </section>
+
+    <!-- Guestbook / Tilaklar Daftari -->
+    <section class="section-container guestbook-section">
+      <div class="section-header">
+        <span class="section-pretitle">MEHMONLAR TILARLARI</span>
+        <h2 class="section-title">Ezgu Tilaklar</h2>
+        <div class="title-underline"></div>
+      </div>
+
+      <div class="wishes-stream" id="wishesStream">
+        <!-- Initial Warm Wishes -->
+        <div class="wish-bubble">
+          <div class="wish-author"><i class="fa-solid fa-heart"></i> Jamshid &amp; Madina</div>
+          <p class="wish-text">Ikkala yoshga ham cheksiz baxt, quvonch va tinch-totuv oilaviy hayot tilaymiz! Qo'sha qaringlar!</p>
+          <span class="wish-time">Bugun</span>
+        </div>
+        <div class="wish-bubble">
+          <div class="wish-author"><i class="fa-solid fa-heart"></i> Bobur Beknazarov</div>
+          <p class="wish-text">To'ylar muborak bo'lsin! Doimo bir-biringizni e'zozlab, eng baxtli xonadonlardan biri bo'linglar!</p>
+          <span class="wish-time">Kecha</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Video Preview / Modal Section -->
+    <section class="section-container video-section glass-card">
+      <div class="section-header">
+        <span class="section-pretitle">VIDEO LAVHA</span>
+        <h2 class="section-title">Taklifnoma Videosi</h2>
+        <div class="title-underline"></div>
+      </div>
+      <div class="video-preview-box">
+        <video controls playsinline poster="assets/invitation_card.jpg" class="invitation-video-player">
+          <source src="taklifnoma_video.mp4" type="video/mp4">
+          Brauzeringiz videoni qo'llab-quvvatlamaydi.
+        </video>
+      </div>
+    </section>
+
+    <!-- Share & Social Section -->
+    <section class="section-container share-section">
+      <div class="section-header">
+        <span class="section-pretitle">DO'STLAR VA YAQINLARGA ULASHISH</span>
+        <h2 class="section-title">Taklifnomani Yuborish</h2>
+        <div class="title-underline"></div>
+      </div>
+
+      <div class="share-buttons-wrapper">
+        <a id="shareTelegram" href="#" target="_blank" class="share-btn tg-btn">
+          <i class="fa-brands fa-telegram"></i> Telegram
+        </a>
+        <a id="shareWhatsapp" href="#" target="_blank" class="share-btn wa-btn">
+          <i class="fa-brands fa-whatsapp"></i> WhatsApp
+        </a>
+        <button id="copySiteLinkBtn" class="share-btn copy-btn">
+          <i class="fa-solid fa-link"></i> Havolani Nusxalash
+        </button>
+      </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer class="footer-section">
+      <div class="footer-doves">
+        <i class="fa-solid fa-dove"></i>
+        <span>✦</span>
+        <i class="fa-solid fa-dove fa-flip-horizontal"></i>
+      </div>
+      <h2 class="footer-monogram">Javohir &amp; Sevinch</h2>
+      <p class="footer-closing">SIZNI KUTIB QOLAMIZ!</p>
+      <p class="footer-date">02 • 10 • 2026</p>
+      <div class="footer-bottom-text">
+        <span>© 2026 G'anisher Beknazarovlar oilasi • Barcha huquqlar himoyalangan</span>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- Toast Notification element -->
+  <div id="toastNotification" class="toast-notification">
+    <i class="fa-solid fa-check-circle"></i>
+    <span id="toastMessage">Nusxalandi!</span>
+  </div>
+
+  <!-- JavaScript Configuration & Main Logic -->
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
